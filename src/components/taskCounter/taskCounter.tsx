@@ -3,6 +3,8 @@ import { Avatar, Box, Typography } from '@mui/material';
 import { ITaskCounter } from './interfaces/ITaskCounter';
 import { Status } from '../createTaskForm/enums/Status';
 import { emitCorrectBorderColor } from './helpers/emitCorrectBorderColor';
+import { emitCorrectLabel } from './helpers/emitCorrectLabel';
+import PropTypes from 'prop-types';
 
 export const TaskCounter: FC<ITaskCounter> = (
   props,
@@ -30,7 +32,7 @@ export const TaskCounter: FC<ITaskCounter> = (
           }}
         >
           <Typography color="#ffffff" variant="h4">
-            10
+            {count}
           </Typography>
         </Avatar>
         <Typography
@@ -39,9 +41,18 @@ export const TaskCounter: FC<ITaskCounter> = (
           fontSize="20px"
           variant="h5"
         >
-          Subtitle
+          {emitCorrectLabel(status)}
         </Typography>
       </Box>
     </>
   );
+};
+
+TaskCounter.propTypes = {
+  count: PropTypes.number,
+  status: PropTypes.oneOf([
+    Status.todo,
+    Status.inProgress,
+    Status.completed,
+  ]),
 };
