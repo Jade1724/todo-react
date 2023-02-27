@@ -1,4 +1,5 @@
 import React, { FC, ReactElement, useState } from 'react';
+import { useMutation } from 'react-query';
 
 import {
   Box,
@@ -15,6 +16,8 @@ import { TaskDateField } from './_taskDateField';
 import { TaskSelectField } from './_taskSelectField';
 import { Status } from './enums/Status';
 import { Priority } from './enums/Priority';
+import { sendApiRequest } from '../../helpers/sendApiRequest';
+import { ICreateTask } from '../taskArea/interfaces/ICreateTask';
 
 export const CreateTaskForm: FC = (): ReactElement => {
   // Declare component states
@@ -29,6 +32,16 @@ export const CreateTaskForm: FC = (): ReactElement => {
   const [priority, setPriority] = useState<string>(
     Priority.normal,
   );
+
+  // Create task mutation
+  const createTaskMutation = useMutation(
+    (data: ICreateTask) =>
+      sendApiRequest(
+        'http://localhost:3200/tasks',
+        'POST',
+        data,
+      ),
+  );
   return (
     <Box
       display="flex"
@@ -39,9 +52,9 @@ export const CreateTaskForm: FC = (): ReactElement => {
       my={6}
     >
       <Alert
-        severity='success'
-        sx={{width: '100%', marginBottom: '16px'}}
-        >
+        severity="success"
+        sx={{ width: '100%', marginBottom: '16px' }}
+      >
         <AlertTitle>Success</AlertTitle>
         The task has been created successfully
       </Alert>
