@@ -1,12 +1,28 @@
 import React, { FC, ReactElement } from 'react';
-import { Grid, Box } from '@mui/material';
+import {
+  Grid,
+  Box,
+  Alert,
+  LinearProgress,
+} from '@mui/material';
 import { format } from 'date-fns';
+import { useQuery } from 'react-query';
 
 import { TaskCounter } from '../taskCounter/taskCounter';
 import { Task } from '../task/task';
-
+import { sendApiRequest } from '../../helpers/sendApiRequest';
+import { ITaskApi } from './interfaces/ITaskApi';
 
 export const TaskArea: FC = (): ReactElement => {
+  const { error, isLoading, data, refetch } = useQuery(
+    'tasks',
+    async () => {
+      return await sendApiRequest<ITaskApi[]>(
+        'http://localhost:3200/tasks',
+        'GET',
+      );
+    },
+  );
   return (
     <Grid item md={8} px={4}>
       <Box mb={8} px={4}>
@@ -30,9 +46,24 @@ export const TaskArea: FC = (): ReactElement => {
           xs={12}
           mb={8}
         >
-          <TaskCounter />         
-          <TaskCounter />         
-          <TaskCounter />         
+          <>
+            {error && (
+              <Alert severity="error">
+                There was an error fetching your tasks
+              </Alert>
+            )}
+
+            {!error &&
+              Array.isArray(data) &&
+              data.length === 0 && (
+                <Alert severity="warning">
+                  You do not have any task in the database
+                </Alert>
+              )}
+            <TaskCounter />
+            <TaskCounter />
+            <TaskCounter />
+          </>
         </Grid>
         <Grid
           item
@@ -41,10 +72,24 @@ export const TaskArea: FC = (): ReactElement => {
           xs={10}
           md={8}
         >
-          <Task />
-          <Task />
-          <Task />
-          <Task />
+          {isLoading ? (
+            <LinearProgress />
+          ) : (
+            Array.isArray(data) &&
+            data.length > 0 &&
+            data.map((task, index) => {
+              return (
+                <Task
+                  key={index + task.priority}
+                  id={task.id}
+                  title={task.title}
+                  date={new Date(task.date)}
+                  priority={task.priority}
+                  status={task.status}
+                />
+              );
+            })
+          )}
         </Grid>
       </Grid>
     </Grid>
