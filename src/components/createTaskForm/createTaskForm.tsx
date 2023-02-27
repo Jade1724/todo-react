@@ -42,6 +42,22 @@ export const CreateTaskForm: FC = (): ReactElement => {
         data,
       ),
   );
+
+  function createTaskHandler() {
+    if (!title || !date || !description) {
+      return;
+    }
+
+    const task = {
+      title,
+      description,
+      date: date.toString(),
+      status,
+      priority,
+    };
+
+    createTaskMutation.mutate(task);
+  }
   return (
     <Box
       display="flex"
@@ -64,25 +80,29 @@ export const CreateTaskForm: FC = (): ReactElement => {
       <Stack sx={{ width: '100%' }} spacing={2}>
         <TaskTitleField
           onChange={(e) => setTitle(e.target.value)}
-        />
+          disabled={createTaskMutation.isLoading}
+          />
         <TaskDescriptionField
           onChange={(e) => setDescription(e.target.value)}
-        />
+          disabled={createTaskMutation.isLoading}
+          />
         <TaskDateField
           value={date}
           onChange={(date) => setDate(date)}
-        />
+          disabled={createTaskMutation.isLoading}
+          />
         <Stack
           sx={{ width: '100%' }}
           direction="row"
           spacing={2}
-        >
+          >
           <TaskSelectField
             label="Status"
             name="status"
             onChange={(e) =>
               setStatus(e.target.value as string)
             }
+            disabled={createTaskMutation.isLoading}
             items={[
               {
                 value: Status.todo,
@@ -93,12 +113,13 @@ export const CreateTaskForm: FC = (): ReactElement => {
                 label: Status.inProgress.toUpperCase(),
               },
             ]}
-          />
+            />
           <TaskSelectField
             label="Priority"
             name="priority"
             value={priority}
             onChange={(e) => setPriority(e.target.value)}
+            disabled={createTaskMutation.isLoading}
             items={[
               {
                 value: Priority.low,
@@ -115,8 +136,20 @@ export const CreateTaskForm: FC = (): ReactElement => {
             ]}
           />
         </Stack>
-        <LinearProgress />
-        <Button variant="contained" size="large" fullWidth>
+        {createTaskMutation.isLoading && <LinearProgress />}
+        <Button
+          disabled={
+            !title ||
+            !description ||
+            !date ||
+            !status ||
+            !priority
+          }
+          onClick={createTaskHandler}
+          variant="contained"
+          size="large"
+          fullWidth
+        >
           Create a Task
         </Button>
       </Stack>
