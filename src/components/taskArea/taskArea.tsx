@@ -14,6 +14,7 @@ import { sendApiRequest } from '../../helpers/sendApiRequest';
 import { ITaskApi } from './interfaces/ITaskApi';
 import { Status } from '../createTaskForm/enums/Status';
 import { IUpdateTask } from '../createTaskForm/interfaces/IUpdateTask';
+import { countTasks } from './helpers/countTasks';
 
 export const TaskArea: FC = (): ReactElement => {
   const { error, isLoading, data, refetch } = useQuery(
@@ -56,8 +57,8 @@ export const TaskArea: FC = (): ReactElement => {
   ) {
     updateTaskMutation.mutate({
       id,
-      status: Status.completed
-    })
+      status: Status.completed,
+    });
   }
   return (
     <Grid item md={8} px={4}>
@@ -96,9 +97,30 @@ export const TaskArea: FC = (): ReactElement => {
                   You do not have any task in the database
                 </Alert>
               )}
-            <TaskCounter />
-            <TaskCounter />
-            <TaskCounter />
+            <TaskCounter
+              count={
+                data
+                  ? countTasks(data, Status.todo)
+                  : undefined
+              }
+              status={Status.todo}
+            />
+            <TaskCounter
+              count={
+                data
+                  ? countTasks(data, Status.inProgress)
+                  : undefined
+              }
+              status={Status.inProgress}
+            />
+            <TaskCounter
+              count={
+                data
+                  ? countTasks(data, Status.completed)
+                  : undefined
+              }
+              status={Status.completed}
+            />
           </>
         </Grid>
         <Grid
