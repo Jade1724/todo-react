@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { ITaskFooter } from './interfaces/ITaskFooter';
 import PropTypes from 'prop-types';
+import { Status } from '../createTaskForm/enums/Status';
 
 export const TaskFooter: FC<ITaskFooter> = (
   props,
@@ -28,8 +29,9 @@ export const TaskFooter: FC<ITaskFooter> = (
         label="In Progress"
         control={
           <Switch
-            onChange={(e) => onStatusChange(e)}
+            onChange={(e) => onStatusChange(e, id)}
             color="warning"
+            defaultChecked={status === Status.inProgress}
           />
         }
       />
@@ -40,7 +42,7 @@ export const TaskFooter: FC<ITaskFooter> = (
         sx={{
           color: '#ffffff',
         }}
-        onClick={(e) => onClick(e)}
+        onClick={(e) => onClick(e, id)}
       >
         Mark Complete
       </Button>
